@@ -1,8 +1,32 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Scheduling</title>
+</head>
+<body>
+    <h2>CPU Scheduling Algorithms</h2>
 
-{% block title %}Home{% endblock %}
+    <form method="post">
+        <label>Number of procesess: </label>
+        <input type="number" name="Nop" value="{{ Nop or '' }}" required>
+        <input type="submit" value="Generate Fields">
+    </form>
 
-{% block content %}
-    <h1>Home</h1>
-    <p>Welcome to the home page</p>
-{% endblock %}
+    {% if Nop %}
+    <form method="post">
+        <input type="hidden" name="Nop" value="{{ Nop }}">
+
+        {% for i in range (Nop) %}
+        <h4> Process {{i+1}}</h4>
+        <label>Name:</label><input type="text" name="name{{i}}" required><br>
+        <label>Arrival Time:</label><input type="number" name="arrival_time{{i}}" required><br>
+        <label>Burst Time:</label><input type="number" name="burst_time{{i}}" required><br>
+        {% endfor %}
+
+        <input type="submit" value="Calculate">
+    </form>
+    {% endif %}
+</body>
+</html>
