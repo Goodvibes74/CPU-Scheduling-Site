@@ -26,3 +26,16 @@ for p in processes:
     # This is to check if the processes are in the order of their arrival time
     print(f"Process: {p.name}, Arrival Time: {p.arrival_time}, Burst Time: {p.burst_time}")
 
+def FCFS(processes):
+    #calculating completion time, waiting time and turnaround time
+    completion_time=0
+    for p in processes:
+        if p.arrival_time>completion_time:
+            completion_time=p.arrival_time
+        p.completion_time=completion_time+p.burst_time
+        p.turnaround_time=p.completion_time-p.arrival_time
+        p.waiting_time=p.turnaround_time-p.burst_time
+        completion_time=p.completion_time
+
+
+
