@@ -6,26 +6,42 @@
     <title>CPU Scheduling</title>
 </head>
 <body>
-    <h2>CPU Scheduling Algorithms</h2>
-
     <form method="post">
-        <label>Number of procesess: </label>
-        <input type="number" name="Nop" value="{{ Nop or '' }}" required>
+        <label>Select Scheduling Algorithm:</label>
+        <select name="algorithm" required>
+            <option value="FCFS">First-Come, First-Served (FCFS)</option>
+            <option value="SJF">Shortest Job First (SJF)</option>
+            <option value="Round Robin">Round Robin</option>
+            <option value="Priority">Priority Scheduling</option>
+        </select>
+        <br><br>
+        <label>Number of Processes:</label>
+        <input type="number" name="num_processes" value="{{ num_processes or '' }}" required>
         <input type="submit" value="Generate Fields">
     </form>
 
-    {% if Nop %}
+    {% if num_processes %}
     <form method="post">
-        <input type="hidden" name="Nop" value="{{ Nop }}">
-
-        {% for i in range (Nop) %}
-        <h4> Process {{i+1}}</h4>
-        <label>Name:</label><input type="text" name="name{{i}}" required><br>
-        <label>Arrival Time:</label><input type="number" name="arrival_time{{i}}" required><br>
-        <label>Burst Time:</label><input type="number" name="burst_time{{i}}" required><br>
+        <input type="hidden" name="num_processes" value="{{ num_processes }}">
+        <input type="hidden" name="algorithm" value="{{ algorithm }}">
+        
+        {% for i in range(num_processes) %}
+        <h4>Process {{ i + 1 }}</h4>
+        <label>Name:</label> <input type="text" name="name{{ i }}" required><br>
+        <label>Arrival Time:</label> <input type="number" name="arrival_time{{ i }}" required><br>
+        <label>Burst Time:</label> <input type="number" name="burst_time{{ i }}" required><br>
+        
+        {% if algorithm == "Priority" %}
+        <label>Priority:</label> <input type="number" name="priority{{ i }}" required><br>
+        {% endif %}
         {% endfor %}
-
-        <input type="submit" value="Calculate">
+        
+        {% if algorithm == "Round Robin" %}
+        <label>Time Quantum:</label> <input type="number" name="time_quantum" required><br>
+        {% endif %}
+        
+        <br>
+        <input type="submit" value="Compute Schedule">
     </form>
     {% endif %}
 </body>
