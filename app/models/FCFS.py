@@ -1,41 +1,43 @@
-class Process:
-    #This stores the attributes of each process
-    def __init__(self, name, arrival_time, burst_time):
-        self.name = name
-        self.arrival_time = arrival_time
-        self.burst_time = burst_time
-        self.waiting_time = 0
-        self.turnaround_time = 0
-        self.completion_time = 0
+# app/models/FCFS.py
+from .process import Process
 
-processes=[]#to store object processes of class Process
+def fcfs_scheduling(processes):
+    """
+    First-Come, First-Served Scheduling.
+    Expects 'processes' as a list of Process objects.
+    """
+    # Sort by arrival time
+    processes.sort(key=lambda p: p.arrival_time)
+    current_time = 0
+    total_waiting = 0
+    total_turnaround = 0
 
-n=int(input("Enter the number of processes: "))
-for i in range(n):
-    name=input(f"Enter the name of Process {i+1}: ")
-    arrival_time=int(input("Enter the arrival time of the process: "))
-    burst_time=int(input("Enter the burst time of the process: "))
-    
-    P_info=Process(name, arrival_time, burst_time)
-    processes.append(P_info)
-
-    
-#sorting the processes according to arrival time
-processes.sort(key=lambda p: p.arrival_time)
-for p in processes:
-    # This is to check if the processes are in the order of their arrival time
-    print(f"Process: {p.name}, Arrival Time: {p.arrival_time}, Burst Time: {p.burst_time}")
-
-def FCFS(processes):
-    #calculating completion time, waiting time and turnaround time
-    completion_time=0
     for p in processes:
-        if p.arrival_time>completion_time:
-            completion_time=p.arrival_time
-        p.completion_time=completion_time+p.burst_time
-        p.turnaround_time=p.completion_time-p.arrival_time
-        p.waiting_time=p.turnaround_time-p.burst_time
-        completion_time=p.completion_time
+        if p.arrival_time > current_time:
+            current_time = p.arrival_time
+        p.completion_time = current_time + p.burst_time
+        p.turnaround_time = p.completion_time - p.arrival_time
+        p.waiting_time = p.turnaround_time - p.burst_time
 
+        current_time = p.completion_time
+        total_waiting += p.waiting_time
+        total_turnaround += p.turnaround_time
 
+    # Prepare data for display
+    rows = [{
+        'process': p.name,
+        'arrival': p.arrival_time,
+        'burst': p.burst_time,
+        'priority': p.priority,
+        'waiting': p.waiting_time,
+        'turnaround': p.turnaround_time,
+        'completion': p.completion_time
+    } for p in processes]
 
+    avg_waiting = total_waiting / len(processes)
+    avg_turnaround = total_turnaround / len(processes)
+    return {
+        'rows': rows,
+        'avg_waiting_time': avg_waiting,
+        'avg_turnaround_time': avg_turnaround
+    }

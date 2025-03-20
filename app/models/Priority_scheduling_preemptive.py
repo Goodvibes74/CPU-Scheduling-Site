@@ -1,41 +1,27 @@
-# app/models/Round_Robin.py
-from collections import deque
+# app/models/Priority_scheduling_preemptive.py
 from .process import Process
 
-def round_robin_scheduling(processes, quantum):
+def priority_preemptive_scheduling(processes):
     """
-    Round Robin Scheduling.
+    Priority Scheduling (Preemptive).
+    Lower priority value means higher priority.
     """
     processes.sort(key=lambda p: p.arrival_time)
     n = len(processes)
     current_time = 0
+    completed = 0
     total_waiting = 0
     total_turnaround = 0
-    completed = 0
-    ready_queue = deque()
-    i = 0  # index for processes
 
     while completed < n:
-        # Add processes that have arrived to the ready queue.
-        while i < n and processes[i].arrival_time <= current_time:
-            ready_queue.append(processes[i])
-            i += 1
+        ready = [p for p in processes if p.arrival_time <= current_time and p.remaining_time > 0]
+        if not ready:
+            current_time = min([p.arrival_time for p in processes if p.remaining_time > 0])
+            continue
 
-        if not ready_queue:
-            # Jump to next arrival if queue is empty.
-            current_time = processes[i].arrival_time
-            ready_queue.append(processes[i])
-            i += 1
-
-        current_process = ready_queue.popleft()
-        run_time = min(quantum, current_process.remaining_time)
-        current_process.remaining_time -= run_time
-        current_time += run_time
-
-        # Add any new arrivals during this quantum.
-        while i < n and processes[i].arrival_time <= current_time:
-            ready_queue.append(processes[i])
-            i += 1
+        current_process = min(ready, key=lambda p: p.priority)
+        current_process.remaining_time -= 1
+        current_time += 1
 
         if current_process.remaining_time == 0:
             current_process.completion_time = current_time
@@ -44,8 +30,6 @@ def round_robin_scheduling(processes, quantum):
             total_waiting += current_process.waiting_time
             total_turnaround += current_process.turnaround_time
             completed += 1
-        else:
-            ready_queue.append(current_process)
 
     rows = [{
         'process': p.name,
